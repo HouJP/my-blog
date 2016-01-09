@@ -1,0 +1,30 @@
+<meta http-equiv=Content-Type content="text/html;charset=utf-8">
+
+<h2>
+	<!-- 题目来源 -->
+	问题描述
+</h2>
+
+<p>
+在开发Spark项目的过程中，为了方便，我们通常将所有的依赖都打入最终的jar包，导致最终的程序包过于庞大(几百兆)，上传到服务器就需要花费比较长的时间。除此之外，很多程序都会有共同的依赖，重复打包上传实在是一项不必要的开销。
+</p>
+
+<h2>
+	<!-- 题目类型 -->
+	解决办法
+</h2>
+
+<p>
+在<em>${SPARK_HOME}/conf/spark-defaults.conf</em>中可以设置以下两个参数，然后将所有依赖的jar包拷贝到指定的目录下，这样就不必将依赖打包上传，而且也不需要在执行<em>spark-submit</em>命令的时候写一长串<em>--jars</em>参数了。
+</p>
+
+<pre class="lang:shell decode:true">
+# add into ${SPARK_HOME}/conf/spark-defaults.conf
+spark.executor.extraClassPath=/opt/spark-1.5.1-bin-without-hadoop/lib/bda/
+spark.driver.extraClassPat
+</pre>
+
+<p>
+但是这样做有一个缺点：需要在Spark集群的所有机器上保证该目录的存在，而且需要将依赖的jar包在所有机器上拷贝一份。
+为了避免日后在集群机器间拷贝文件的麻烦，所以写了一个同步文件并执行指定命令的脚本，只需要将文件拷贝到一台机器上，然后把脚本配置好，就可以发送到集群的所有机器上并执行特定命令(文件或命令可以为空)。代码下载移步<a href="GitHub.com/HouJP/hand-out">GitHub.com/HouJP/hand-out</a>。
+</p>
